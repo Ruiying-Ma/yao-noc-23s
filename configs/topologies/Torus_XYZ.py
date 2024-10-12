@@ -45,7 +45,8 @@ class Torus_XYZ(SimpleTopology):
         # link counter to set unique link ids
         link_count = 0
 
-        # Add all but the remainder nodes to the list of nodes to be unifomrly distributed across the nework.
+        # Add all but the remainder nodes to the list of nodes
+        # to be unifomrly distributed across the nework.
         network_nodes = []
         remainder_nodes = []
         for node_index in range(len(nodes)):
@@ -69,7 +70,8 @@ class Torus_XYZ(SimpleTopology):
             )
             link_count += 1
 
-        # Connect the remainding nodes to router 0.  These should only be DMA nodes.
+        # Connect the remainding nodes to router 0.
+        # These should only be DMA nodes.
         for (i, node) in enumerate(remainder_nodes):
             assert node.type == "DMA_Controller"
             assert i < remainder

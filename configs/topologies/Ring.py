@@ -35,7 +35,8 @@ class Ring(SimpleTopology):
         # Set unique link ids using `link_count`
         link_count = 0
 
-        # Add all but the remainder nodes to the list of nodes to the list of nodes to be uniformly distributed across the network
+        # Add all but the remainder nodes to the list of nodes
+        # to be uniformly distributed across the network
         network_nodes = []
         remainder_nodes = []
         for node_index in range(len(nodes)):
