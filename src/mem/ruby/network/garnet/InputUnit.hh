@@ -82,6 +82,12 @@ class InputUnit : public Consumer
     }
 
     inline void
+    grant_firsthalf(int vc, bool first_half)
+    {
+        virtualChannels[vc].set_first_half_vcs(first_half);
+    }
+
+    inline void
     grant_outvc(int vc, int outvc)
     {
         virtualChannels[vc].set_outvc(outvc);
@@ -98,6 +104,19 @@ class InputUnit : public Consumer
     {
         return virtualChannels[invc].get_outvc();
     }
+
+    std::set<std::pair<int, bool>>
+    get_outports(int invc)
+    {
+        return virtualChannels[invc].get_outports();
+    }
+
+    inline bool
+    get_firsthalf(int invc)
+    {
+        return virtualChannels[invc].get_first_half_vcs();
+    }
+
 
     inline Tick
     get_enqueue_time(int invc)

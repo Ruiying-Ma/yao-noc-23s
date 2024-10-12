@@ -42,8 +42,9 @@ namespace garnet
 
 VirtualChannel::VirtualChannel()
   : inputBuffer(), m_vc_state(IDLE_, Tick(0)), m_output_port(-1),
-    m_enqueue_time(INFINITE_), m_output_vc(-1)
+    m_enqueue_time(INFINITE_), m_output_vc(-1), m_first_half_vcs(true)
 {
+    clear_outports();
 }
 
 void
@@ -54,6 +55,8 @@ VirtualChannel::set_idle(Tick curTime)
     m_enqueue_time = Tick(INFINITE_);
     m_output_port = -1;
     m_output_vc = -1;
+    clear_outports();
+    m_first_half_vcs = true;
 }
 
 void

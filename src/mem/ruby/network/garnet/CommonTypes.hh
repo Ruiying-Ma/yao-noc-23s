@@ -50,8 +50,15 @@ enum VC_state_type {IDLE_, VC_AB_, ACTIVE_, NUM_VC_STATE_TYPE_};
 enum VNET_type {CTRL_VNET_, DATA_VNET_, NULL_VNET_, NUM_VNET_TYPE_};
 enum flit_stage {I_, VA_, SA_, ST_, LT_, NUM_FLIT_STAGE_};
 enum link_type { EXT_IN_, EXT_OUT_, INT_, NUM_LINK_TYPES_ };
-enum RoutingAlgorithm { TABLE_ = 0, XY_ = 1, CUSTOM_ = 2,
+enum RoutingAlgorithm { TABLE_ = 0, XY_ = 1, RING_ = 2, XYZ_ = 3, CUSTOM_ = 4,
                         NUM_ROUTING_ALGORITHM_};
+// R1x+ = 0, R2x+ = 1, R1x- = 2, R2x- = 3
+// R1y+ = 4, R2y+ = 5, R1y- = 6, R2y- = 7
+// R1z+ = 8, R2z+ = 9, R1z- = 10, R2z- = 11
+enum channel_type {R1xp = 0, R2xp = 1, R1xn = 2, R2xn = 3,
+                   R1yp = 4, R2yp = 5, R1yn = 6, R2yn = 7,
+                   R1zp = 8, R2zp = 9, R1zn = 10, R2zn = 11,
+                   NUM_CHANNEL_TYPES_};
 
 struct RouteInfo
 {

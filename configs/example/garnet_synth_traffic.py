@@ -173,7 +173,9 @@ root = Root(full_system=False, system=system)
 root.system.mem_mode = "timing"
 
 # Not much point in this being higher than the L1 latency
-m5.ticks.setGlobalFrequency("1ps")
+m5.ticks.setGlobalFrequency(
+    "500ps"
+)  # Lab1-Task1: change the GlobalFrequency to 2GHz
 
 # instantiate configuration
 m5.instantiate()

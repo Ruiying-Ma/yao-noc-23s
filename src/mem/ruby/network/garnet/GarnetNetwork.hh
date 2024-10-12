@@ -75,6 +75,11 @@ class GarnetNetwork : public Network
     int getNumRows() const { return m_num_rows; }
     int getNumCols() { return m_num_cols; }
 
+    // for 3D torus
+    int getNumXs() const {return m_num_xs;}
+    int getNumYs() const {return m_num_ys;}
+    int getNumZs() {return m_num_zs;}
+
     // for network
     uint32_t getNiFlitSize() const { return m_ni_flit_size; }
     uint32_t getBuffersPerDataVC() { return m_buffers_per_data_vc; }
@@ -83,6 +88,8 @@ class GarnetNetwork : public Network
 
     bool isFaultModelEnabled() const { return m_enable_fault_model; }
     FaultModel* fault_model;
+
+    bool isWormholeEnabled() const { return m_wormhole; }
 
 
     // Internal configuration
@@ -161,12 +168,16 @@ class GarnetNetwork : public Network
     // Configuration
     int m_num_rows;
     int m_num_cols;
+    int m_num_xs;
+    int m_num_ys;
+    int m_num_zs;
     uint32_t m_ni_flit_size;
     uint32_t m_max_vcs_per_vnet;
     uint32_t m_buffers_per_ctrl_vc;
     uint32_t m_buffers_per_data_vc;
     int m_routing_algorithm;
     bool m_enable_fault_model;
+    bool m_wormhole;
 
     // Statistical variables
     statistics::Vector m_packets_received;

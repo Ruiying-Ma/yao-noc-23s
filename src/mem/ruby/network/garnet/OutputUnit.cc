@@ -106,6 +106,51 @@ OutputUnit::has_free_vc(int vnet)
     return false;
 }
 
+// Check if the output port (i.e., input port at next router) has free VCs.
+// Only check the first half.
+// Only used in 3D Torus customered routing
+bool
+OutputUnit::first_has_free_vc(int vnet)
+{
+    int vc_base = vnet*m_vc_per_vnet;
+    for (int vc = vc_base; vc < vc_base + (m_vc_per_vnet / 2); vc++) {
+        if (is_vc_idle(vc, curTick()))
+            return true;
+    }
+
+    return false;
+}
+
+// Check if the output port (i.e., input port at next router) has free VCs.
+// Only check the second half.
+// Only used in 3D Torus customered routing
+bool
+OutputUnit::second_has_free_vc(int vnet)
+{
+    int vc_base = vnet*m_vc_per_vnet;
+    for (int vc = vc_base + (m_vc_per_vnet / 2); vc < vc_base + m_vc_per_vnet; vc++) {
+        if (is_vc_idle(vc, curTick()))
+            return true;
+    }
+
+    return false;
+}
+
+// Check if the output port has vc with credits (used in wormhole case)
+// Since is only used in wormhole case, there is no need to check the state of the VC
+bool
+OutputUnit::has_vc_with_credits(int vnet)
+{
+    int vc_base = vnet * m_vc_per_vnet;
+    for (int vc = vc_base; vc < vc_base + m_vc_per_vnet; vc++) {
+        if (outVcState[vc].has_credit()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 // Assign a free output VC to the winner of Switch Allocation
 int
 OutputUnit::select_free_vc(int vnet)
@@ -118,6 +163,52 @@ OutputUnit::select_free_vc(int vnet)
         }
     }
 
+    return -1;
+}
+
+// Assign a free output VC to the winner of Switch Allocation
+// Only check the first half.
+// Only used in 3D Torus customered routing
+int
+OutputUnit::first_select_free_vc(int vnet)
+{
+    int vc_base = vnet*m_vc_per_vnet;
+    for (int vc = vc_base; vc < vc_base + (m_vc_per_vnet / 2); vc++) {
+        if (is_vc_idle(vc, curTick())) {
+            outVcState[vc].setState(ACTIVE_, curTick());
+            return vc;
+        }
+    }
+
+    return -1;
+}
+
+// Assign a free output VC to the winner of Switch Allocation
+// Only check the second half.
+// Only used in 3D Torus customered routing
+int
+OutputUnit::second_select_free_vc(int vnet)
+{
+    int vc_base = vnet*m_vc_per_vnet;
+    for (int vc = vc_base + (m_vc_per_vnet / 2); vc < vc_base + m_vc_per_vnet; vc++) {
+        if (is_vc_idle(vc, curTick())) {
+            outVcState[vc].setState(ACTIVE_, curTick());
+            return vc;
+        }
+    }
+
+    return -1;
+}
+
+// Assign an output VC with credits to the winner of Switch Allocation (used in wormhole)
+int
+OutputUnit::select_vc_with_credits(int vnet) {
+    int vc_base = vnet * m_vc_per_vnet;
+    for (int vc = vc_base; vc < vc_base + m_vc_per_vnet; vc++) {
+        if(outVcState[vc].has_credit()) {
+            return vc;
+        }
+    }
     return -1;
 }
 

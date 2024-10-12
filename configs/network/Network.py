@@ -48,6 +48,18 @@ def define_options(parser):
         help="the number of rows in the mesh topology",
     )
     parser.add_argument(
+        "--torus-xs",
+        type=int,
+        default=0,
+        help="the number of xs in the 3d torus topology",
+    )
+    parser.add_argument(
+        "--torus-ys",
+        type=int,
+        default=0,
+        help="the number of ys in the 3d torus topology",
+    )
+    parser.add_argument(
         "--network",
         default="simple",
         choices=["simple", "garnet"],
@@ -95,7 +107,9 @@ def define_options(parser):
         help="""routing algorithm in network.
             0: weight-based table
             1: XY (for Mesh. see garnet/RoutingUnit.cc)
-            2: Custom (see garnet/RoutingUnit.cc""",
+            2: Ring (for Ring. see garnet/RoutingUnit.cc)
+            3: XYZ (for 3D Torus. see garnet/RoutingUnit.cc)
+            4: Custom (see garnet/RoutingUnit.cc)""",
     )
     parser.add_argument(
         "--network-fault-model",
@@ -117,6 +131,26 @@ def define_options(parser):
         default=False,
         help="""SimpleNetwork links uses a separate physical
             channel for each virtual network""",
+    )
+    parser.add_argument(
+        "--wormhole",
+        action="store_true",
+        default=False,
+        help="enable wormhole flow control.",
+    )
+    parser.add_argument(
+        "--buffers-per-data-vc",
+        action="store",
+        type=int,
+        default=4,
+        help="number of flit buffers per data virtual channel.",
+    )
+    parser.add_argument(
+        "--buffers-per-ctrl-vc",
+        action="store",
+        type=int,
+        default=1,
+        help="number of flit buffers per ctrl virtual channel.",
     )
 
 
@@ -165,10 +199,15 @@ def init_network(options, network, InterfaceClass):
 
     if options.network == "garnet":
         network.num_rows = options.mesh_rows
+        network.num_xs = options.torus_xs
+        network.num_ys = options.torus_ys
         network.vcs_per_vnet = options.vcs_per_vnet
         network.ni_flit_size = options.link_width_bits / 8
         network.routing_algorithm = options.routing_algorithm
         network.garnet_deadlock_threshold = options.garnet_deadlock_threshold
+        network.buffers_per_data_vc = options.buffers_per_data_vc
+        network.buffers_per_ctrl_vc = options.buffers_per_ctrl_vc
+        network.wormhole = options.wormhole
 
         # Create Bridges and connect them to the corresponding links
         for intLink in network.int_links:

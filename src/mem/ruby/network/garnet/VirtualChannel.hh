@@ -33,6 +33,7 @@
 #define __MEM_RUBY_NETWORK_GARNET_0_VIRTUALCHANNEL_HH__
 
 #include <utility>
+#include <set>
 
 #include "mem/ruby/network/garnet/CommonTypes.hh"
 #include "mem/ruby/network/garnet/flitBuffer.hh"
@@ -59,6 +60,13 @@ class VirtualChannel
     inline int get_outvc()                  { return m_output_vc; }
     void set_outport(int outport)           { m_output_port = outport; };
     inline int get_outport()                  { return m_output_port; }
+    void clear_outports()                                              {m_output_ports.clear();}
+    std::set<std::pair<int, bool>> get_outports()                     {return m_output_ports;}
+    inline bool is_clear_outports()                                     {return m_output_ports.size() == 0;}
+    void set_outports(std::set<std::pair<int, bool>> outports)           {m_output_ports = outports;}
+    void set_first_half_vcs(bool first_half_vcs)                        {m_first_half_vcs = first_half_vcs;}
+    inline bool get_first_half_vcs()                                    {return m_first_half_vcs;}
+
 
     inline Tick get_enqueue_time()          { return m_enqueue_time; }
     inline void set_enqueue_time(Tick time) { m_enqueue_time = time; }
@@ -104,6 +112,8 @@ class VirtualChannel
     int m_output_port;
     Tick m_enqueue_time;
     int m_output_vc;
+    std::set<std::pair<int, bool>> m_output_ports; // only used in 3d torus customed routing case, in InputUnit::wakeup()
+    bool m_first_half_vcs; // only used in 3d torus. true: first half vcs; false: second half vcs.
 };
 
 } // namespace garnet

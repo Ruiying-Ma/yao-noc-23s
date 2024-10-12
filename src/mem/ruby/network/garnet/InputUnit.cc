@@ -77,6 +77,8 @@ void
 InputUnit::wakeup()
 {
     flit *t_flit;
+    bool wormhole = m_router->get_net_ptr()->isWormholeEnabled();
+    bool is_torus = (m_router->get_net_ptr()->getRoutingAlgorithm() == XYZ_);
     if (m_in_link->isReady(curTick())) {
 
         t_flit = m_in_link->consumeLink();
@@ -90,17 +92,33 @@ InputUnit::wakeup()
         if ((t_flit->get_type() == HEAD_) ||
             (t_flit->get_type() == HEAD_TAIL_)) {
 
-            assert(virtualChannels[vc].get_state() == IDLE_);
+            if (!wormhole){
+                assert(virtualChannels[vc].get_state() == IDLE_);
+            }
             set_vc_active(vc, curTick());
 
             // Route computation for this vc
-            int outport = m_router->route_compute(t_flit->get_route(),
-                m_id, m_direction);
-
-            // Update output port in VC
-            // All flits in this packet will use this output port
-            // The output port field in the flit is updated after it wins SA
-            grant_outport(vc, outport);
+            if (!is_torus) {
+                int outport = m_router->route_compute(t_flit->get_route(), m_id, m_direction);
+                if (!wormhole) {
+                    // Update output port in VC
+                    // All flits in this packet will use this output port
+                    // The output port field in the flit is updated after it wins SA
+                    grant_outport(vc, outport);
+                } else {
+                    // Update output port in flit
+                    // Different 1-flit packets in VC will use different output port
+                    // The output port in VC will be updated at the begining of SA
+                    t_flit->set_outport(outport);
+                }
+            } else {
+                // torus customed routing is not compatible with wormhole
+                assert(virtualChannels[vc].is_clear_outports() && virtualChannels[vc].get_first_half_vcs() == true);
+                std::set<std::pair<int, bool>> outports = m_router->torus_route_compute(t_flit->get_route(), m_id, m_direction);
+                virtualChannels[vc].set_outports(outports);
+                assert(virtualChannels[vc].get_outport() == -1 && virtualChannels[vc].get_outvc() == -1);
+                assert(virtualChannels[vc].get_outports().size() > 0 && virtualChannels[vc].get_outports().size() <= 4);
+            }
 
         } else {
             assert(virtualChannels[vc].get_state() == ACTIVE_);

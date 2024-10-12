@@ -164,6 +164,12 @@ Router::route_compute(RouteInfo route, int inport, PortDirection inport_dirn)
     return routingUnit.outportCompute(route, inport, inport_dirn);
 }
 
+std::set<std::pair<int, bool>>
+Router::torus_route_compute(RouteInfo route, int inport, PortDirection inport_dirn)
+{
+    return routingUnit.outportComputeXYZ(route, inport, inport_dirn);
+}
+
 void
 Router::grant_switch(int inport, flit *t_flit)
 {

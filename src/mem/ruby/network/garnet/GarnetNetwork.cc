@@ -65,12 +65,15 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     : Network(p)
 {
     m_num_rows = p.num_rows;
+    m_num_xs = p.num_xs;
+    m_num_ys = p.num_ys;
     m_ni_flit_size = p.ni_flit_size;
     m_max_vcs_per_vnet = 0;
     m_buffers_per_data_vc = p.buffers_per_data_vc;
     m_buffers_per_ctrl_vc = p.buffers_per_ctrl_vc;
     m_routing_algorithm = p.routing_algorithm;
     m_next_packet_id = 0;
+    m_wormhole = p.wormhole;
 
     m_enable_fault_model = p.enable_fault_model;
     if (m_enable_fault_model)
@@ -132,6 +135,19 @@ GarnetNetwork::init()
     } else {
         m_num_rows = -1;
         m_num_cols = -1;
+    }
+
+    if (getNumXs() > 0 && getNumYs() > 0) {
+        // Only for 3D Torus topology
+        // m_num_xs and m_num_ys are only used for implementing XYZ routing in RoutingUnit.cc
+        assert(m_num_xs == getNumXs());
+        assert(m_num_ys == getNumYs());
+        m_num_zs = m_routers.size() / (m_num_xs * m_num_ys);
+        assert (m_num_xs * m_num_ys * m_num_zs == m_routers.size());
+    } else {
+        m_num_xs = -1;
+        m_num_ys = -1;
+        m_num_zs = -1;
     }
 
     // FaultModel: declare each router to the fault model

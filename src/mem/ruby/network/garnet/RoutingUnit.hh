@@ -73,6 +73,16 @@ class RoutingUnit
                          int inport,
                          PortDirection inport_dirn);
 
+    // Routing for Ring
+    int outportComputeRing(RouteInfo route,
+                           int inport,
+                           PortDirection inport_dirn);
+
+    // Routing for 3D Torus
+    std::set<std::pair<int, bool>> outportComputeXYZ(RouteInfo route,
+                               int inport,
+                               PortDirection inport_dirn);
+
     // Custom Routing Algorithm using Port Directions
     int outportComputeCustom(RouteInfo route,
                              int inport,
